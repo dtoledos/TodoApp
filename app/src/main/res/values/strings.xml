@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">TodoApp</string>
+    <string name="title_my_tasks">Mis tareas</string>
+    <string name="empty_tasks_message">No hay tareas aquí.</string>
+
+    <string name="cd_settings">Configuración</string>
+    <string name="cd_menu">Menú</string>
+    <string name="cd_search">Buscar</string>
+    <string name="cd_sort">Ordenar</string>
+    <string name="cd_voice_input">Entrada de voz</string>
+    <string name="cd_more_options">Más opciones</string>
+    <string name="cd_add_task">Agregar tarea</string>
+
+    <string name="placeholder_task_name">Nombre de la tarea</string>
+    <string name="label_no_start_date">Sin fecha de inicio</string>
+    <string name="label_no_due_date">Sin fecha límite</string>
+    <string name="label_no_repeat">No repetir</string>
+    <string name="label_priority">Prioridad</string>
+    <string name="label_default_list">Lista predeterminada</string>
+    <string name="label_add_labels">Añade etiquetas</string>
+    <string name="label_add_subtask">Añadir subtarea</string>
+    <string name="label_description">Descripción</string>
+
+    <string name="cd_save_task">Guardar tarea</string>
+    <string name="cd_close_screen">Cerrar</string>
+</resources>
