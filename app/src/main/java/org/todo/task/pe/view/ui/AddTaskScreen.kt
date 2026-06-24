@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.todo.task.pe.R
 import org.todo.task.pe.view.model.AddTaskViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +40,15 @@ fun AddTaskScreen(
     val taskName by viewModel.taskName.collectAsState()
     val description by viewModel.description.collectAsState()
     val priority by viewModel.priority.collectAsState()
+    val startDate by viewModel.startDate.collectAsState()
+    val showDatePicker by viewModel.showDatePicker.collectAsState()
+
+    // Lógica para mostrar el texto por defecto o la fecha seleccionada
+    val startDateText = if (startDate != null) {
+        formatMillisToSpanishDate(startDate)
+    } else {
+        stringResource(R.string.label_no_start_date)
+    }
 
     Scaffold(
         topBar = {
@@ -103,7 +115,11 @@ fun AddTaskScreen(
             HorizontalDivider(color = Color.DarkGray, thickness = 0.5.dp)
 
             // Filas de opciones
-            TaskOptionRow(Icons.Outlined.Event, stringResource(R.string.label_no_start_date))
+            TaskOptionRow(
+                icon = Icons.Outlined.Event,
+                label = startDateText,
+                onClick = { viewModel.setShowDatePicker(true) }
+            )
             TaskOptionRow(Icons.Outlined.AccessTime, stringResource(R.string.label_no_due_date))
             TaskOptionRow(Icons.Outlined.Repeat, stringResource(R.string.label_no_repeat))
 
@@ -118,20 +134,72 @@ fun AddTaskScreen(
 
             // Campo: Descripción
             TaskOptionRow(Icons.Outlined.Subject, stringResource(R.string.label_description))
+
+            if (showDatePicker) {
+                // Inicializa el calendario con la fecha actual o la guardada
+                val datePickerState = rememberDatePickerState(
+                    initialSelectedDateMillis = startDate ?: System.currentTimeMillis()
+                )
+
+                MaterialTheme(
+                    colorScheme = darkColorScheme(
+                        surface = Color(0xFF1E1E1E), // El fondo oscuro principal del calendario
+                        onSurface = Color.White,     // El color de los números y el texto
+                        primary = Color(0xFF64B5F6), // El color azul para las selecciones
+                        onPrimary = Color.Black      // El color del número cuando está seleccionado
+                    )
+                ) {
+                    DatePickerDialog(
+                        onDismissRequest = { viewModel.setShowDatePicker(false) },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.onStartDateSelected(datePickerState.selectedDateMillis)
+                                viewModel.setShowDatePicker(false)
+                            }) {
+                                Text("Aceptar", color = Color(0xFF64B5F6))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { viewModel.setShowDatePicker(false) }) {
+                                Text("Cancelar", color = Color(0xFF64B5F6))
+                            }
+                        },
+                        // Aseguramos que el contenedor general también use el mismo gris oscuro
+                        colors = DatePickerDefaults.colors(
+                            containerColor = Color(0xFF1E1E1E)
+                        )
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = false, // Opcional: Oculta el botón de cambiar a modo texto si quieres un look más limpio
+                            colors = DatePickerDefaults.colors(
+                                titleContentColor = Color.LightGray,
+                                headlineContentColor = Color.White,
+                                weekdayContentColor = Color.Gray,
+                                dayContentColor = Color.White,
+                                selectedDayContainerColor = Color(0xFF64B5F6),
+                                selectedDayContentColor = Color.Black,
+                                todayContentColor = Color(0xFF64B5F6), // Color del día actual
+                                todayDateBorderColor = Color(0xFF64B5F6) // Borde del día actual
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun TaskOptionRow(icon: ImageVector, label: String, hasBox: Boolean = false) {
+fun TaskOptionRow(icon: ImageVector, label: String, hasBox: Boolean = false, onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null // Esto desactiva el ripple conflictivo
-            ) { /* Acción vacía */ }
+                indication = null
+            ) { onClick() }
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -196,4 +264,11 @@ fun PriorityRow(selectedPriority: Int, onPriorityClick: (Int) -> Unit) {
         }
     }
     HorizontalDivider(color = Color(0xFF222222), thickness = 0.5.dp)
+}
+
+fun formatMillisToSpanishDate(millis: Long?): String {
+    if (millis == null) return ""
+    // Formato: día de la semana, día 'de' mes
+    val formatter = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES"))
+    return formatter.format(Date(millis))
 }

@@ -6,6 +6,14 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class AddTaskViewModel : ViewModel() {
     // Estados de la UI
+    // Estado para la fecha seleccionada (nulo significa "Sin fecha")
+    private val _startDate = MutableStateFlow<Long?>(null)
+    val startDate = _startDate.asStateFlow()
+
+    // Estado para controlar la visibilidad del DatePicker
+    private val _showDatePicker = MutableStateFlow(false)
+    val showDatePicker = _showDatePicker.asStateFlow()
+
     private val _taskName = MutableStateFlow("")
     val taskName = _taskName.asStateFlow()
 
@@ -26,5 +34,13 @@ class AddTaskViewModel : ViewModel() {
             // Aquí llamarás al Repository para guardar en Room más adelante
             println("Tarea guardada: $name")
         }
+    }
+
+    fun onStartDateSelected(dateMillis: Long?) {
+        _startDate.value = dateMillis
+    }
+
+    fun setShowDatePicker(show: Boolean) {
+        _showDatePicker.value = show
     }
 }
