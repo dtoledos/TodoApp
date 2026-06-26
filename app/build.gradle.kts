@@ -1,15 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
-    // Nota: Dependiendo de tu versión de Kotlin, podrías necesitar el plugin del compilador de Compose
-    // id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.kotlin.android)
+    //  id("com.google.gms.google-services")
+    alias(libs.plugins.hilt.android)
 }
 
 android {
     namespace = "org.todo.task.pe"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "org.todo.task.pe"
@@ -31,8 +31,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     // 1. ACTIVAR JETPACK COMPOSE
@@ -50,9 +50,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.foundation)
-    //implementation(libs.androidx.runtime) // Puedes quitar esta si usas el BOM de abajo
-    //implementation(libs.androidx.ui)      // Puedes quitar esta si usas el BOM de abajo
+    //implementation(libs.androidx.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,5 +77,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("com.google.android.gms:play-services-ads:23.1.0")
 
-
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-compiler:2.51.1")
 }
